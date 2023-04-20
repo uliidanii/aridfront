@@ -14,7 +14,7 @@ const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia })
   const [file, setFile] = useState(null);
   const [connected, setConnected] = useState(false);
   const stompClientRef = useRef(null);
-  const SERVER_BASE_URL = 'http://54.210.56.185:8080';
+  const SERVER_BASE_URL = 'http://3.83.153.165:8080';
   const { currentUser } = useContext(UserContext);
   const tecnicoId = currentUser.id;
 
@@ -36,7 +36,7 @@ const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia })
   
     try {
       const response = await axios.get(
-        `http://54.210.56.185:8080/api/tecnico/conversations/${tecnicoId}/${docenteId}/${incidenciaId}`
+        `http://3.83.153.165:8080/api/tecnico/conversations/${tecnicoId}/${docenteId}/${incidenciaId}`
       );
       
       setMessages(response.data);
@@ -52,7 +52,7 @@ const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia })
     formData.append("file", file);
 
     try {
-      const response = await axios.post("http://54.210.56.185:8080/upload-file", formData);
+      const response = await axios.post("http://3.83.153.165:8080/upload-file", formData);
       return response.data.fileUrl;
     } catch (error) {
       throw new Error("Error al cargar el archivo:", error);
@@ -97,7 +97,7 @@ const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia })
   };
   useEffect(() => {
     const chatId = `chat_${docenteId}_${tecnicoId}`;
-    const socket = new SockJS('http://54.210.56.185:8080/ws');
+    const socket = new SockJS('http://3.83.153.165:8080/ws');
     const stompClient = Stomp.over(socket);
     stompClientRef.current = stompClient;
 

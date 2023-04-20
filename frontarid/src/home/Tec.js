@@ -137,14 +137,14 @@ const Tec = () => {
   const completadas = incidencias.filter(
     (incidencia) => incidencia.estado === 'COMPLETADA'
   );
-  const handleShowChatMD = (docenteId, incidenciaId,estadoIncidencia) => {
-    if (docenteId === null) {
+  const handleShowChatMD = (tecnicoId, incidenciaId,estadoIncidencia) => {
+    if (tecnicoId === null) {
       toast.error("Técnico no definido");
       return;
     } 
     const foundIncidencia = incidencias.find((inc) => inc.id === incidenciaId);
     setSelectedIncidencia(foundIncidencia);
-    setSelectedDocenteId(docenteId);
+    setSelectedDocenteId(tecnicoId);
     setselectedIncidenciaId(incidenciaId);
     setSelectedIncidenciaStatus(estadoIncidencia); 
     setShowChatMD(true);

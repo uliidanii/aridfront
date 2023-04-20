@@ -10,6 +10,9 @@ const Incidencia = ({ handleClose, onUpdateIncidencias }) => {
   const location = useLocation();
   const user = location.state?.user;
   const email = user?.email;
+const [disableAula, setDisableAula] = useState(false);
+const [disableLaboratorio, setDisableLaboratorio] = useState(false);
+
 
   const [areas, setAreas] = useState([]);
   const [aulas, setAulas] = useState([]);
@@ -85,7 +88,7 @@ const Incidencia = ({ handleClose, onUpdateIncidencias }) => {
     console.log(formData);
   
     try {
-      const response = await axios.post('http://54.210.56.185:8080/incidencias/crear-incidencia', formData, {
+      const response = await axios.post('http://3.83.153.165:8080/incidencias/crear-incidencia', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -95,7 +98,7 @@ const Incidencia = ({ handleClose, onUpdateIncidencias }) => {
       console.log('Incidencia creada:', response.data);
   
       handleClose();
-      onUpdateIncidencias(); // Llamar a la función para actualizar las incidencias
+      onUpdateIncidencias(); 
 
     } catch (error) {
       toast.error("Error al crear");
@@ -127,43 +130,41 @@ const Incidencia = ({ handleClose, onUpdateIncidencias }) => {
         <label style={{display: 'flex', fontWeight:'600', fontSize:'14px', marginBottom:'5px'}}>Aula:</label>
         <select
           value={selectedAula}
-          onChange={(e) => setSelectedAula(e.target.value)}
+          onChange={(e) => {
+            setSelectedAula(e.target.value);
+            setDisableLaboratorio(e.target.value !== '');
+          }}
         >
           <option value="">Selecciona un aula</option>
           {
-             aulas
-             .filter((aula) => aula.area && aula.area.id === Number(selectedArea))
-             .map((aula) => (
-               <option key={aula.id} value={aula.nombre}>
-                 {aula.nombre}
-               </option>
-             ))
-           
-
+            aulas
+              .filter((aula) => aula.area && aula.area.id === Number(selectedArea))
+              .map((aula) => (
+                <option key={aula.id} value={aula.nombre} disabled={disableAula}>
+                  {aula.nombre}
+                </option>
+              ))
           }
-         
         </select>
       </div>
       <div>
         <label style={{display: 'flex', fontWeight:'600', fontSize:'14px', marginBottom:'5px'}}>Laboratorio:</label>
         <select
           value={selectedLaboratorio}
-          onChange={(e) => setSelectedLaboratorio(e.target.value)}
+          onChange={(e) => {
+            setSelectedLaboratorio(e.target.value);
+            setDisableAula(e.target.value !== '');
+          }}
         >
           <option value="">Selecciona un laboratorio</option>
           {
-         laboratorios
-         .filter((lab) => {
-           console.log('selectedArea:', selectedArea);
-           console.log('lab.area.id:', lab.area?.id);
-           return lab.area?.id === Number(selectedArea);
-         })
-          .map((lab) => (
-            <option key={lab.id} value={lab.nombre}>
-              {lab.nombre}
-            </option>
-          ))
-
+            laboratorios
+              .filter((lab) => lab.area?.id === Number(selectedArea))
+              .map((lab) => (
+                <option key={lab.id} value={lab.nombre} disabled={disableLaboratorio}>
+                  {lab.nombre}
+                </option>
+              ))
           }
         </select>
       </div>
@@ -177,9 +178,9 @@ const Incidencia = ({ handleClose, onUpdateIncidencias }) => {
         ></textarea>
       </div>
       <div>
-  <label style={{display: 'flex', fontWeight:'600', fontSize:'14px', marginBottom:'5px'}}>Título:</label>
-  <input type="text" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
-</div>
+        <label style={{display: 'flex', fontWeight:'600', fontSize:'14px', marginBottom:'5px'}}>Título:</label>
+        <input type="text" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
+      </div>
       <div>
         <label style={{display: 'flex', fontWeight:'600', fontSize:'14px', marginBottom:'5px', }}>Archivo (opcional):</label>
         <input
@@ -192,9 +193,8 @@ const Incidencia = ({ handleClose, onUpdateIncidencias }) => {
       <div>
         <button type="submit" >Crear</button>
       </div>
-  </form>
-  
+    </form>
   );
-};
+        };
 
 export default Incidencia;

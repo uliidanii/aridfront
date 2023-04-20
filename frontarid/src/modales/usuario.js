@@ -44,7 +44,7 @@ const Usuario = ({ handleClose, handleSubmit }) => {
   
 
     try {
-      const response = await api.post('http://54.210.56.185:8080/registro', {
+      const response = await api.post('http://3.83.153.165:8080/registro', {
         nombres: nombres,
         apellidos: apellidos,
         email: email,

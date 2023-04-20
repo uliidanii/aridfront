@@ -52,7 +52,7 @@ export const InformeDocentes = () => {
     const pdf = new jsPDF();
     pdf.addImage(imgData, 'PNG', 40, 60, 120, 120);
     const headers = [['Docente', 'Numero de incidencias']];
-    // await axios.get('http://54.210.56.185:8080/incidencias/incidencias-por-docente')
+    // await axios.get('http://localhost:8080/incidencias/incidencias-por-docente')
     // .then(response=>{
     //   const data = Object.entries(response.data).map(([name,incidencias])=>({name,incidencias}));
     //   setDatosApi(data)
@@ -68,7 +68,7 @@ export const InformeDocentes = () => {
   }
 
   useEffect(() => {
-    axios.get('http://54.210.56.185:8080/incidencias/incidencias-por-docente')
+    axios.get('http://localhost:8080/incidencias/incidencias-por-docente')
       .then(response => {
         const data = Object.entries(response.data).map(([name, incidencias]) => ({ name, incidencias }));
         setDatosApi(data)
