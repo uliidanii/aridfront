@@ -68,7 +68,7 @@ export const InformeDocentes = () => {
   }
 
   useEffect(() => {
-    axios.get('http://3.83.99.31:8080/incidencias/incidencias-por-docente')
+    axios.get('http://44.204.79.85:8080/incidencias/incidencias-por-docente')
       .then(response => {
         const data = Object.entries(response.data).map(([name, incidencias]) => ({ name, incidencias }));
         setDatosApi(data)
