@@ -15,7 +15,7 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId,onNewMessage,est
   const [file, setFile] = useState(null);
   const [connected, setConnected] = useState(false);
   const stompClientRef = useRef(null);
-  const SERVER_BASE_URL = 'http://52.90.241.214:8080';
+  const SERVER_BASE_URL = 'http://54.210.56.185:8080';
   const { currentUser } = useContext(UserContext);
   const docenteId = currentUser.id;
   const [incidenciaStatus, setIncidenciaStatus] = useState('');
@@ -37,7 +37,7 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId,onNewMessage,est
   
     try {
       const response = await axios.get(
-        `http://52.90.241.214:8080/api/conversations/${docenteId}/${tecnicoId}/${incidenciaId}`
+        `http://54.210.56.185:8080/api/conversations/${docenteId}/${tecnicoId}/${incidenciaId}`
       );
       setMessages(response.data);
       setIncidenciaStatus(response.data.incidenciaStatus);
@@ -100,7 +100,7 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId,onNewMessage,est
   };
   useEffect(() => {
     const chatId = `chat_${docenteId}_${tecnicoId}`;
-    const socket = new SockJS('http://52.90.241.214:8080/ws');
+    const socket = new SockJS('http://54.210.56.185:8080/ws');
     const stompClient = Stomp.over(socket);
     stompClientRef.current = stompClient;
 

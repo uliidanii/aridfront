@@ -12,16 +12,16 @@ Chart.register(CategoryScale);
 
 export const InformeDocencias = () => {
 
-  const[datosApi,setDatosApi]=useState([]);
+  const [datosApi, setDatosApi] = useState([])
   //GENERAR GRAFICA
   const [chartData, setChartData] = useState({
-    labels: Data.map((data) => data.name),
+    labels: datosApi.map((data) => data.name),
     datasets: [
         {
           //DESCRIPCIÓN DE LA GRAFICA
             label: "Numero de incidencias",
             //MAPEO DE LOS DATOS
-            data: Data.map((data) => data.incidencias),
+            data: datosApi.map((data) => data.incidencias),
             //PALETA DE COLORES PARA LA GRAFICA
             backgroundColor: [
                 "#08B731",
@@ -43,7 +43,7 @@ export const InformeDocencias = () => {
 const generateExcel=()=>{
 
   //-------  GENERAR TABLA CON DATOS OBTENIDOS  ----------
-  const sheet = XLSX.utils.json_to_sheet(Data);
+  const sheet = XLSX.utils.json_to_sheet(datosApi);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,sheet,"Docencias");
   //------------------------------------------------------
@@ -65,7 +65,7 @@ const generatePDF = ()=>{
   pdf.addImage(imgData,'PNG',40,60,120,120);
   //TABLA CON DATOS
   const headers = [['Docencia','Numero de incidencias']];
-  const datos = Data.map(item=>[item.name,item.incidencias]);
+  const datos = datosApi.map(item=>[item.name,item.incidencias]);
   pdf.autoTable({head:headers,body:datos});
 
   const tiempoTranscurrido = Date.now();
@@ -76,7 +76,7 @@ const generatePDF = ()=>{
 
 
 useEffect(() => {
-  axios.get('http://52.90.241.214:8080/incidencias/incidencias-por-area')
+  axios.get('http://54.210.56.185:8080/incidencias/incidencias-por-area')
     .then(response => {
       const data = Object.entries(response.data).map(([name, incidencias]) => ({ name, incidencias }));
       setDatosApi(data)

@@ -16,11 +16,11 @@ export const InformeDivisionAcademica = () => {
 
   //GENERAR GRAFICA
   const [chartData, setChartData] = useState({
-    labels: DataAcademias.map((data) => data.name),
+    labels: datosApi.map((data) => data.name),
     datasets: [
       {
         label: "Numero de incidencias",
-        data: DataAcademias.map((data) => data.incidencias),
+        data: datosApi.map((data) => data.incidencias),
         backgroundColor: [
           "#08B731",
           "#08A6B7",
@@ -65,7 +65,7 @@ export const InformeDivisionAcademica = () => {
 
   
  useEffect(() => {
-  axios.get('http://52.90.241.214:8080/incidencias/incidencias-por-division-academica')
+  axios.get('http://54.210.56.185:8080/incidencias/incidencias-por-division-academica')
     .then(response => {
       const data = Object.entries(response.data).map(([name, incidencias]) => ({ name, incidencias }));
       setDatosApi(data)
