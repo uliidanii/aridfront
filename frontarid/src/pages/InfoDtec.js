@@ -48,7 +48,7 @@ const InfoDtec = () => {
   useEffect(() => {
     async function fetchImage() {
       try {
-        const response = await api.get(`http://44.204.79.85:8080/api/tecnicos/${user.id}/imagen`, {
+        const response = await api.get(`http://54.88.92.181:8080/api/tecnicos/${user.id}/imagen`, {
           responseType: 'arraybuffer',
         });
         const base64 = btoa(
@@ -74,7 +74,7 @@ const InfoDtec = () => {
     formData.append('imagen', file);
 
     try {
-      await api.post(`http://44.204.79.85:8080/api/tecnicos/${userId}/imagen`, formData, {
+      await api.post(`http://54.88.92.181:8080/api/tecnicos/${userId}/imagen`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -102,7 +102,7 @@ const InfoDtec = () => {
     }
 
     try {
-      const response = await api.put(`http://44.204.79.85:8080/api/tecnicos/${user.id}`, formData);
+      const response = await api.put(`http://54.88.92.181:8080/api/tecnicos/${user.id}`, formData);
       console.log("info"+response.data)
       if (response.status === 200) {
         toast.success('Información actualizada');

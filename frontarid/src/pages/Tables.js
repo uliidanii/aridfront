@@ -12,7 +12,7 @@ const Tables = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(`http://44.204.79.85:8080/api/${userType}`);
+        const response = await axios.get(`http://54.88.92.181:8080/api/${userType}`);
         setUsers(response.data);
       } catch (error) {
         console.error('Error al obtener los datos:', error);

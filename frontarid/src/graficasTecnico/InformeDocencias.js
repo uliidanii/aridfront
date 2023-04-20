@@ -76,7 +76,7 @@ const generatePDF = ()=>{
 
 
 useEffect(() => {
-  axios.get('http://44.204.79.85:8080/incidencias/incidencias-por-area')
+  axios.get('http://54.88.92.181:8080/incidencias/incidencias-por-area')
     .then(response => {
       const data = Object.entries(response.data).map(([name, incidencias]) => ({ name, incidencias }));
       setDatosApi(data)
