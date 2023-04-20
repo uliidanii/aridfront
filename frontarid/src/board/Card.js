@@ -18,7 +18,6 @@ const Card = ({ incidencia, index, handleShowChatModal, incidenciaId, handleShow
     }),
   }));
   console.log("Estado de la incidencia seleccionada:", incidencia.estado);
-
   const serverBaseUrl = "http://3.83.99.31:8080";
   const area = incidencia && incidencia.area ? incidencia.area : {};
   const aula = incidencia && incidencia.aula ? incidencia.aula : {};
