@@ -19,7 +19,7 @@ const Card = ({ incidencia, index, handleShowChatModal, incidenciaId, handleShow
   }));
   console.log("Estado de la incidencia seleccionada:", incidencia.estado);
 
-  const serverBaseUrl = "http://localhost:8080";
+  const serverBaseUrl = "http://3.83.99.31:8080";
   const area = incidencia && incidencia.area ? incidencia.area : {};
   const aula = incidencia && incidencia.aula ? incidencia.aula : {};
   const laboratorio = incidencia && incidencia.laboratorio ? incidencia.laboratorio : {}
@@ -87,13 +87,13 @@ const Card = ({ incidencia, index, handleShowChatModal, incidenciaId, handleShow
               </Table>
           
               {incidencia.mediaUrls && (
-             <Carousel style={{marginLeft:'40px'}}>
+             <Carousel style={{marginLeft:'110px'}}>
              {incidencia.mediaUrls.map((mediaUrl, index) => (
                <Carousel.Item key={index} className="carousel slide" data-bs-ride="carousel">
                  {['.mp4', '.avi', '.mov'].some(ext => mediaUrl.endsWith(ext)) ? (
-                   <video src={`${serverBaseUrl}${mediaUrl}`} controls style={{ maxWidth: '80%', height: 'auto', margin: 'auto' }} />
+                   <video src={`${serverBaseUrl}${mediaUrl}`} controls style={{ maxWidth: '50%', height: 'auto', margin: 'auto' }} />
                  ) : (
-                   <img src={`${serverBaseUrl}${mediaUrl}`} alt="Incidencia" style={{ maxWidth: '80%', height: 'auto', margin: 'auto' }} />
+                   <img src={`${serverBaseUrl}${mediaUrl}`} alt="Incidencia" style={{ maxWidth: '50%', height: 'auto', margin: 'auto' }} />
                  )}
                </Carousel.Item>
              ))}

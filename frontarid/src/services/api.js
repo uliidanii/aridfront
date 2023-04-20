@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://3.83.153.165:8080', 
+  baseURL: 'http://3.83.99.31:8080', 
   timeout: 10000, 
 });
 async function assignTechnicianToIncidencia(incidenciaId, emailTecnico) {

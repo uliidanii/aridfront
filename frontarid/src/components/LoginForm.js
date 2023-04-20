@@ -7,7 +7,6 @@ import '../assets/css/style.css';
 import imagen from '../assets/img/utez.png';
 import { ToastContainer, toast } from 'react-toastify';
 
-
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
