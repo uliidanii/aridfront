@@ -12,7 +12,7 @@ Chart.register(CategoryScale);
 
 export const InformeDocencias = () => {
 
-
+  const[datosApi,setDatosApi] = useState([]);
   //GENERAR GRAFICA
   const [chartData, setChartData] = useState({
     labels: Data.map((data) => data.name),
