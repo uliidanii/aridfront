@@ -1,0 +1,16 @@
+
+.message-technician {
+  text-align: left;
+  background-color: #d3d3d3;
+  margin-bottom: 3px;
+  padding: 1px;
+  border-radius: 1px;
+}
+
+.message-teacher {
+  text-align: right;
+  background-color: #a1c5ff;
+  margin-bottom: 3px;
+  padding: 1px;
+  border-radius: 1px;
+}
