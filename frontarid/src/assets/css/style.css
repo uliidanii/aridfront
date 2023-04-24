@@ -9,8 +9,19 @@
 body {
    
     font-family: Arial, Helvetica, sans-serif;
-    background: #E6E6E6;
 }
+
+.rounded-image {
+    border-radius: 10px;
+    border: 2.5px solid #042b54;
+}
+
+.fondoLogin{
+    background: #159957;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #155799, #159957);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #155799, #159957); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
 .main-container {
     display: flex;
     align-items: center;
@@ -18,12 +29,22 @@ body {
     height: 100vh;
 }
 
+.main-conta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: '100%'; /* Ancho máximo */
+    margin: 0 auto; 
+}
+
+
 .form-body {
     width: 400px;
     min-width: 300px;
-    border-radius: 10px;
-    border-top-left-radius: 50px;
-    border-bottom-right-radius: 50px;
+    border-radius: 50px;
+    /* border-top-left-radius: 50px; */
+    /* border-bottom-right-radius: 50px; */
     border: solid 1px #088A68;
     margin: 10px;
     background-color: white;
@@ -50,34 +71,35 @@ body {
     width: 75%;
     padding-left: 10px;
     color: black;
-    border: 1px solid #088A68;
-    border-radius: 2px;
+    border: 1px solid black;
+    /* border-radius: 10px; */
     font-family: Verdana, Geneva, Tahoma, sans-serif;
     background-color: transparent;
-    border-top-left-radius: 10px;
-    border-bottom-right-radius: 10px;
+    /* border-top-left-radius: 10px; */
+    /* border-bottom-right-radius: 10px; */
     font-size: 1rem;
     outline: none;
 }
 
-.form-body input[type="password"] {
+/* .form-body input[type="password"] {
     margin-top: 20px;
-}
+} */
 
 ::placeholder {
     font-size: 1rem;
     color: black;
 }
 
+/* TRANSACCIÓN CUANDO ESCRIBE */
 .form-body input:hover {
-    transition: .5s;
+    transition: .2s;
     border: 1px solid #2980b9;
     color: #2498db;
 }
 
 .form-body button {
     display: block;
-    margin: auto;
+    /* margin: auto; */
     margin-top: 25px;
     margin-bottom: 30px;
     height: 40px;
@@ -91,7 +113,7 @@ body {
     transition:  all .5s ease;
 
 }
-
+ 
 .form-body button:hover {
     color: #d5dbdd;
     border: 2px solid  #088A68;
@@ -131,12 +153,12 @@ body {
     margin-bottom: 30px;
     height: 40px;
     width: 50%;
-    background: #0B0B61 ;
+    border-radius: "10px";
     color:white;
-    border-radius: 2px;
+    border-radius: 50px;
     cursor: pointer;
     outline: none;
-    border: 2px solid #0B0B61;
+    border: 1px solid #0B0B61;
     transition:  all .5s ease;
 }
 
@@ -197,3 +219,21 @@ h5{
 	margin-bottom: 5px;
 	color: #1f1f1f;
 }
+
+.login-image {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    /* Ajustar el ancho de la imagen según sea necesario */
+    width: 150px;
+    /* Añadir margen si es necesario */
+    margin-bottom: 20px;
+    box-shadow: '2px 2px 4px rgba(0, 0, 0, 0.2)'
+  }
+  
+  /* Ajustar el margen superior del formulario para que se separe de la imagen */
+  .form-group {
+    margin-top: 60px;
+  }

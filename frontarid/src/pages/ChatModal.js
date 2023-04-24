@@ -6,16 +6,16 @@ import axios from 'axios';
 import SockJS from 'sockjs-client';
 import { Stomp } from "@stomp/stompjs";
 import { ToastContainer, toast } from 'react-toastify';
-
+import api from '../services/api';
 import 'react-toastify/dist/ReactToastify.css';
-const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId,onNewMessage,estadoIncidencia, }) => {
+const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId, onNewMessage, estadoIncidencia, }) => {
   const [messages, setMessages] = useState([]);
   const [messageContent, setMessageContent] = useState('');
   const messagesEndRef = useRef(null);
   const [file, setFile] = useState(null);
   const [connected, setConnected] = useState(false);
   const stompClientRef = useRef(null);
-  const SERVER_BASE_URL = 'http://54.88.92.181:8080';
+  const SERVER_BASE_URL = 'http://44.197.13.101:8080';
   const { currentUser } = useContext(UserContext);
   const docenteId = currentUser.id;
   const [incidenciaStatus, setIncidenciaStatus] = useState('');
@@ -30,19 +30,19 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId,onNewMessage,est
     }
     if (!incidenciaId) {
       console.error("El id de la incidencia no puede ser nulo");
-  
+
       return;
     }
-  
-  
+
+
     try {
-      const response = await axios.get(
-        `http://54.88.92.181:8080/api/conversations/${docenteId}/${tecnicoId}/${incidenciaId}`
+      const response = await api.get(
+        `api/conversations/${docenteId}/${tecnicoId}/${incidenciaId}`
       );
       setMessages(response.data);
       setIncidenciaStatus(response.data.incidenciaStatus);
       console.log("Mensajes cargados:", response.data);
-    
+
     } catch (error) {
       console.error("Error al cargar los mensajes:", error);
     }
@@ -59,7 +59,7 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId,onNewMessage,est
   };
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (incidenciaStatus === 'COMPLETADA') {    
+    if (incidenciaStatus === 'COMPLETADA') {
       toast.error("No puedes enviar mensajes en incidencias completadas.");
       return;
     }
@@ -100,14 +100,14 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId,onNewMessage,est
   };
   useEffect(() => {
     const chatId = `chat_${docenteId}_${tecnicoId}`;
-    const socket = new SockJS('http://54.88.92.181:8080/ws');
+    const socket = new SockJS('http://44.197.13.101:8080/ws');
     const stompClient = Stomp.over(socket);
     stompClientRef.current = stompClient;
 
     stompClient.onConnect = () => {
       console.log('Connected');
       setConnected(true);
-    
+
       stompClient.subscribe(`/topic/chat/${chatId}`, (newMessage) => {
         console.log("New message received:", JSON.parse(newMessage.body));
         setMessages((prevMessages) => [
@@ -115,14 +115,14 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId,onNewMessage,est
           JSON.parse(newMessage.body),
         ]);
         scrollToBottom();
-    
+
         if (typeof onNewMessage === 'function') {
           onNewMessage(JSON.parse(newMessage.body));
         }
       });
       fetchMessages();
     };
-    
+
 
     stompClient.onStompError = (error) => {
       console.error('Error:', error);
@@ -148,66 +148,66 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId,onNewMessage,est
     return message.docenteId === docenteId;
   };
 
-        
+
   return (
-  
+
     <Modal show={show} onHide={handleClose} style={{ boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.3)" }}>
 
-    <Modal.Body>
-    <div className="message-container" style={{ maxHeight: "300px", overflowY: "auto",boxShadow: "0px 2px 4px rgba(1, 1, 1, 0.3)" }}>
-    {messages.map((message) => (
-  <div
-    key={message.id}
-    className={`message ${isTeacherMessage(message) ? 'message-teacher' : 'message-technician'}`}
-  >
-    <p className="sender">
-      {isTeacherMessage(message) ? '' : message.tecnico}
-    </p>
-    <p className="content">{message.contenido}</p>
-    {message.fileUrl && (
-      message.fileUrl.toLowerCase().endsWith('.pdf') ? (
-        <p>Archivo PDF adjunto: <a href={`${SERVER_BASE_URL}${message.fileUrl}`} target="_blank" rel="noopener noreferrer">Descargar</a></p>
-      ) : (
-        /\.(jpe?g|png|gif)$/i.test(message.fileUrl) ? (
-          <img
-            src={`${SERVER_BASE_URL}${message.fileUrl}`}
-            alt="Imagen adjunta"
-            style={{ maxWidth: "100%", maxHeight: "300px" }}
-          />
-        ) : (
-          <video
-            src={`${SERVER_BASE_URL}${message.fileUrl}`}
-            controls
-            style={{ maxWidth: "100%", maxHeight: "300px" }}
-          />
-        )
-      )
-    )}
-  </div>
-))}
+      <Modal.Body>
+        <div className="message-container" style={{ maxHeight: "300px", overflowY: "auto", boxShadow: "0px 2px 4px rgba(1, 1, 1, 0.3)" }}>
+          {messages.map((message) => (
+            <div
+              key={message.id}
+              className={`message ${isTeacherMessage(message) ? 'message-teacher' : 'message-technician'}`}
+            >
+              <p className="sender">
+                {isTeacherMessage(message) ? '' : message.tecnico}
+              </p>
+              <p className="content">{message.contenido}</p>
+              {message.fileUrl && (
+                message.fileUrl.toLowerCase().endsWith('.pdf') ? (
+                  <p>Archivo PDF adjunto: <a href={`${SERVER_BASE_URL}${message.fileUrl}`} target="_blank" rel="noopener noreferrer">Descargar</a></p>
+                ) : (
+                  /\.(jpe?g|png|gif)$/i.test(message.fileUrl) ? (
+                    <img
+                      src={`${SERVER_BASE_URL}${message.fileUrl}`}
+                      alt="Imagen adjunta"
+                      style={{ maxWidth: "100%", maxHeight: "300px" }}
+                    />
+                  ) : (
+                    <video
+                      src={`${SERVER_BASE_URL}${message.fileUrl}`}
+                      controls
+                      style={{ maxWidth: "100%", maxHeight: "300px" }}
+                    />
+                  )
+                )
+              )}
+            </div>
+          ))}
 
-  <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} />
 
-      </div>
-      <br></br>
-      <form onSubmit={sendMessage} className='form' style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <input 
-          type="text"
-          value={messageContent}
-          onChange={(e) => setMessageContent(e.target.value)}
-          placeholder="Escribe tu mensaje aquí"
-        />
-        <input
-          type="file"
-          onChange={handleFileChange}
-          accept="image/*,application/pdf"
-        />
-    <Button type="submit"   disabled={estadoIncidencia === "COMPLETADA"}>
-  Enviar
-</Button>
-      </form>
-    </Modal.Body>
-  </Modal>
+        </div>
+        <br></br>
+        <form onSubmit={sendMessage} className='form' style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <input
+            type="text"
+            value={messageContent}
+            onChange={(e) => setMessageContent(e.target.value)}
+            placeholder="Escribe tu mensaje aquí"
+          />
+          <input
+            type="file"
+            onChange={handleFileChange}
+            accept="image/*,application/pdf"
+          />
+          <Button type="submit" disabled={estadoIncidencia === "COMPLETADA"}>
+            Enviar
+          </Button>
+        </form>
+      </Modal.Body>
+    </Modal>
   );
 };
 

@@ -10,10 +10,13 @@ import api from '../services/api';
 import ChatModal from '../pages/ChatModal'
 import { ToastContainer, toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
-import { faHome, faUsers, faChartBar, faTimes,faUser, faAdd } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faUsers, faChartBar, faTimes, faUser, faAdd } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Spinner from '../components/Spinner'
+import img from '../assets/img/ut.png'
 
 const Do = () => {
+  const [loading, setLoading] = useState(false)
   const [showUserModal, setShowUserModal] = useState(false);
   const [showAulaLabModal, setShowAulaLabModal] = useState(false);
   const [showChatModal, setShowChatModal] = useState(false);
@@ -40,25 +43,25 @@ const Do = () => {
       const response = await api.get('/incidencias/docente', {
         params: { emailDocente: correoDocente },
       });
-  
+
       setIncidencias(response.data);
     } catch (error) {
       console.error('Error al actualizar las incidencias:', error);
     }
   };
-  
+
   useEffect(() => {
     const fetchIncidencias = async () => {
-
       try {
+        setLoading(true)
         const response = await api.get('/incidencias/docente', {
           params: { emailDocente: correoDocente },
         });
-
-
         setIncidencias(response.data);
+        setLoading(false)
       } catch (error) {
         console.error('Error al obtener las incidencias:', error);
+        setLoading(false)
       }
     };
     fetchIncidencias();
@@ -73,10 +76,10 @@ const Do = () => {
     setSelectedIncidencia(foundIncidencia);
     setSelectedTecnicoId(tecnicoId);
     setselectedIncidenciaId(incidenciaId);
-    setSelectedIncidenciaStatus(estadoIncidencia); 
+    setSelectedIncidenciaStatus(estadoIncidencia);
     setShowChatModal(true);
   };
-  
+
   const handleCloseChatModal = () => setShowChatModal(false);
   const pendientes = incidencias.filter(
     (incidencia) => incidencia.estado === 'PENDIENTE'
@@ -95,7 +98,7 @@ const Do = () => {
         onClick={onClick}
         style={{
           position: 'fixed',
-          height:'50px',
+          height: '50px',
           borderRadius: '50%',
           border: 'none',
           padding: '15px',
@@ -111,28 +114,30 @@ const Do = () => {
   };
 
   return (
-    <>
-       <NavbarD user={user} />
-  
-    <ToastContainer />
-  
+    <div style={{backgroundImage:`url(${img})`,width:"100%",height:'100vh',backgroundRepeat:'no-repeat',backgroundPosition:'center'}}>
+      <NavbarD user={user} />
+
+      <ToastContainer />
+
       <FloatingButton
         onClick={handleShowAulaLabModal}
-        style={{ bottom: '30px', right: '30px' }}
-      
+        style={{ bottom: '3%', right: '3%' }}
+
       >
-       <FontAwesomeIcon icon={faAdd}/> 
+        <FontAwesomeIcon icon={faAdd} />
       </FloatingButton>
+
       <Modal show={showAulaLabModal} onHide={handleCloseAulaLabModal}>
-        <Modal.Header style={{background:'#042B61'}} closeButton>
-          <Modal.Title style={{color:'#ffff'}}>Registrar incidencia</Modal.Title>
+        <Modal.Header style={{ background: '#042B61' }} closeButton>
+          <Modal.Title style={{ color: '#ffff' }}>Registrar incidencia</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Incidencia handleClose={handleCloseAulaLabModal} />
         </Modal.Body>
       </Modal>
 
-      <DndProvider backend={HTML5Backend}>
+      {loading?<Spinner/>:(
+        <DndProvider backend={HTML5Backend}>
         <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
 
           <Column
@@ -159,6 +164,8 @@ const Do = () => {
           />
         </div>
       </DndProvider>
+      )}
+
       <Modal show={showAulaLabModal} onHide={handleCloseAulaLabModal}>
         <Modal.Header style={{ background: '#042B61' }} closeButton>
           <Modal.Title style={{ color: '#ffff' }}>Registrar incidencia</Modal.Title>
@@ -170,8 +177,15 @@ const Do = () => {
           />
         </Modal.Body>
       </Modal>
-     
-    </>
+      <ChatModal
+        show={showChatModal}
+        handleClose={() => setShowChatModal(false)}
+        tecnicoId={selectedTecnicoId}
+        incidenciaId={selectedIncidenciaId}
+        incidencia={selectedIncidencia}
+        onNewMessage={handleNewMessageNotification}
+      />
+    </div>
   );
 };
 

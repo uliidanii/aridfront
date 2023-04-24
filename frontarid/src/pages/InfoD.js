@@ -8,15 +8,27 @@ import { faCamera, faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import api from '../services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import '../assets/css/style.css'
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import Spinner from '../components/Spinner'
+import img from '../assets/img/ut.png'
 
 
 const InfoD = () => {
   const location = useLocation();
   const user = location.state.user;
   const [showModal, setShowModal] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showTablePassword, setShowTablePassword] = useState(false);
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+  const toggleTablePasswordVisibility = () => {
+    setShowTablePassword(!showTablePassword);
+  };
+  
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  
   const [formData, setFormData] = useState({
     username: user.username,
     apellidos: user.apellidos,
@@ -32,25 +44,28 @@ const InfoD = () => {
 
     if (file) {
       try {
+        setLoadingImagen(true)
         await uploadImage(user.id, file);
         const reader = new FileReader();
         reader.onload = (e) => {
           setImageUrl(e.target.result);
         };
         reader.readAsDataURL(file);
-
+        setLoadingImagen(false)
       } catch (error) {
         console.error("Error al cargar la imagen:", error);
-
+        setLoadingImagen(false)
       }
     }
   };
 
   const [imageUrl, setImageUrl] = useState(null);
+  const [loadingImagen, setLoadingImagen] = useState(false)
 
   useEffect(() => {
     async function fetchImage() {
       try {
+        setLoadingImagen(true)
         const response = await api.get(`/api/administradores/${user.id}/imagen`, {
           responseType: "arraybuffer",
         });
@@ -62,8 +77,10 @@ const InfoD = () => {
         );
         setImageUrl(`data:image/png;base64,${base64}`);
         console.log('Imagen obtenida correctamente:', imageUrl);
+        setLoadingImagen(false)
       } catch (error) {
         console.error("Error al obtener la imagen:", error);
+        setLoadingImagen(false)
       }
     }
 
@@ -119,7 +136,7 @@ const InfoD = () => {
         formData
       );
       if (response.status === 200) {
-
+       
         user.username = formData.username;
         user.apellidos = formData.apellidos;
         user.email = formData.email;
@@ -137,49 +154,47 @@ const InfoD = () => {
     }
 
   };
+ 
 
   return (
     <>
       <NavbarA user={user} />
       <br></br>
-      <div className="container">
-        <div className="row">
+      <div className="main-conta">
+        <div className="row  ">
           <div className="col-12">
 
             <div className="card-header" style={{ backgroundColor: "#03A693", color: "white" }}>
               <div className="d-flex justify-content-between bd-highlight">
                 <div className="bd-highlight"></div>
                 <div className="bd-highlight">
-                  <h4>Mi Perfil</h4>
+                  <h4 style={{margin:5}}>Mi Perfil</h4>
                 </div>
                 <div className="bd-highlight"> </div>
               </div>
             </div>
             <div className="card">
-
               <div className="container">
                 <div className="main-body">
                   <div className="row gutters-sm">
                     <div className="col-md-4 mb-3">
                       <div className="card">
                         <div className="card-body">
-                          <div className="d-flex flex-column align-items-center text-center">
-                            <img
-                              src={imageUrl || "https://bootdey.com/img/Content/avatar/avatar7.png"}
-                              alt=""
-                              className="rounded-circle"
-                              width="150"
-                            />
+                          <div className="flex-column align-items-center text-center">
+                            <div>
+                              {loadingImagen?<Spinner/>:(
+                                <img
+                                src={imageUrl || "https://bootdey.com/img/Content/avatar/avatar7.png"}
+                                alt="Sin foto de perfil"
+                                className="rounded-image"
+                                width="150"
+                                height="180"
+                              />
+                              )}
+                            </div>
                             <div className="mt-3">
-                              <h4>scx</h4>
-                              <p className="text-secondary mb-1">
-
-                              </p>
-                              <p className="text-muted font-size-sm">
-
-                              </p>
                               <label htmlFor="image-upload" style={{ cursor: "pointer" }}>
-                                <FontAwesomeIcon icon={faCamera} size="2x" />
+                                <FontAwesomeIcon icon={faCamera} size="2x" color='#1b4374'/>
                               </label>
                               <input
                                 id="image-upload"
@@ -223,16 +238,9 @@ const InfoD = () => {
                               {user.email}
                             </div>
                           </div>
+                       
+                          
                           <hr />
-                          <div className="row">
-        <div className="col-sm-3">
-          <h6 className="mb-0">Contraseña</h6>
-        </div>
-        <div className="col-sm-9 text-secondary">
-          {user.password}
-        </div>
-      </div>
-      <hr />
                           <div className="row">
                             <div className="col-sm-3">
                               <h6 className="mb-0">Rol</h6>
@@ -251,10 +259,36 @@ const InfoD = () => {
                             </div>
 
                           </div>
-                          
+
                           <hr />
+                     
+                          <div className="row">
+  <div className="col-sm-3">
+    <h6 className="mb-0">Contraseña</h6>
+  </div>
+  <div className="col-sm-9 text-secondary">
+    {showTablePassword ? user.password : "********"}
+    <button
+      type="button"
+      onClick={toggleTablePasswordVisibility}
+      style={{
+        backgroundColor: 'transparent',
+        border: "none",
+        marginLeft: "180px",
+      }}
+    >
+      {showTablePassword ? (
+        <FontAwesomeIcon style={{color:'black'}} icon={faEyeSlash} />
+      ) : (
+        <FontAwesomeIcon style={{color:'black'}} icon={faEye} />
+      )}
+    </button>
+    </div>
+    </div>
+                          <hr />
+                        
                           <button type="submit" style={{ width: '100px', alignSelf: 'center', backgroundColor: 'transparent', border: 'none' }} onClick={handleShowModal}>
-                            <FontAwesomeIcon icon={faPencilAlt} size='2x' />
+                            <FontAwesomeIcon style={{color:'black'}} icon={faPencilAlt} size='2x' />
                           </button>
 
                         </div>
@@ -289,26 +323,42 @@ const InfoD = () => {
               <label htmlFor="email">Email:</label><br></br>
               <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} />
             </div>
-            <div className="form-group">
-              <label htmlFor="password">Contraseña:</label>
-              <br></br>
-              <input
-                type="text"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
+            
             <div className="form-group">
               <label htmlFor="telefono">telefono</label>
               <input type="number" id="telefono" name="telefono" value={formData.telefono} onChange={handleChange} step="1" />
             </div>
             <div className="form-group">
-
+              <label htmlFor="telefono">telefono</label><br></br>
+              <input type="number" id="telefono" name="telefono" value={formData.telefono} onChange={handleChange}  step="1" />
             </div>
-       
-            <button type="submit" style={{ width: '100px', alignSelf: 'center' }}>guardar</button>
+            <div className="form-group">
+  <label htmlFor="password">Contraseña:</label><br></br>
+  <input
+    type={showPassword ? "text" : "password"}
+    id="password"
+    name="password"
+    value={formData.password}
+    onChange={handleChange}
+  />
+  <button 
+    type="button"
+    onClick={togglePasswordVisibility}
+    style={{
+      backgroundColor: "transparent",
+      border: "none",
+      marginLeft: "400px",
+    }}
+  >
+    {showPassword ? (
+      <FontAwesomeIcon   style={{color:'black'}} icon={faEyeSlash} />
+    ) : (
+      <FontAwesomeIcon  style={{color:'black'}} icon={faEye} />
+    )}
+  </button>
+</div>
+
+            <button type="submit" style={{ width: '100px', alignSelf: 'center', backgroundColor:'#0B0B61' }}>guardar</button>
           </form>
         </Modal.Body>
       </Modal>

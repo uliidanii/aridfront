@@ -11,13 +11,16 @@ import api from '../services/api';
 import UserContext from '../services/UserContext';
 import { assignTechnicianToIncidencia, adminAcceptIncidencia } from '../services/api';
 import { faUser, faChalkboard, faTh } from '@fortawesome/free-solid-svg-icons';
-
+import Spinner from '../components/Spinner'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ToastContainer, toast } from 'react-toastify';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import AreaForm from '../modales/AreaForm';
+import img from '../assets/img/ut.png'
+
 const Ad = () => {
+  const [loading, setLoading] = useState(false)
   const [showUserModal, setShowUserModal] = useState(false);
   const [showAulaLabModal, setShowAulaLabModal] = useState(false);
 
@@ -26,7 +29,7 @@ const Ad = () => {
   const [showAreaModal, setShowAreaModal] = useState(false);
   const handleShowAreaModal = () => setShowAreaModal(true);
   const handleCloseAreaModal = () => setShowAreaModal(false);
-  
+
   const handleShowAulaLabModal = () => setShowAulaLabModal(true);
   const handleCloseAulaLabModal = () => setShowAulaLabModal(false);
   const location = useLocation();
@@ -40,6 +43,12 @@ const Ad = () => {
       toast.error("No se puede cambiar el estado de una incidencia completada");
       return;
     }
+    if ((sourceIncidencia.estado === 'ACTIVA' && targetEstado === 'PENDIENTE') ||
+      (sourceIncidencia.estado === '' && targetEstado === '')) {
+      toast.error("No se permite esta transición de estado");
+      return;
+    }
+
     const updatedIncidencia = { ...sourceIncidencia, estado: targetEstado };
 
     const performAction = async () => {
@@ -110,6 +119,7 @@ const Ad = () => {
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
+        setLoading(true)
         const responsePendientes = await api.get('/incidencias/admin', {
           params: { estado: 'PENDIENTE' },
         });
@@ -125,8 +135,10 @@ const Ad = () => {
           ...responseActivas.data,
           ...responseCompletadas.data,
         ]);
+        setLoading(false)
       } catch (error) {
         console.error('Error al obtener las incidencias:', error);
+        setLoading(false)
       }
     };
 
@@ -151,7 +163,7 @@ const Ad = () => {
           position: 'fixed',
           borderRadius: '50%',
           border: 'none',
-          padding: '15px',
+          padding: '20px',
           backgroundColor: '#088A68',
           color: 'white',
           cursor: 'pointer',
@@ -162,61 +174,48 @@ const Ad = () => {
       </button>
     );
   };
- 
+
 
   return (
-    <>
+    <div style={{backgroundImage:`url(${img})`,width:"100%",height:'100vh',backgroundRepeat:'no-repeat',backgroundPosition:'center'}}>
       <NavbarA user={user} />
 
       <FloatingButton
-        onClick={handleShowUserModal}
-        style={{ bottom: '30px', right: '30px' }}
-      >
-      <FontAwesomeIcon icon={faUser} />
-      </FloatingButton>
-
-      <FloatingButton
         onClick={handleShowAulaLabModal}
-        style={{ bottom: '30px', right: '200px' }}
+        style={{ bottom: '3%', right: '3%' }}
       >
-      <FontAwesomeIcon icon={faChalkboard} />
+        <FontAwesomeIcon icon={faChalkboard} />
       </FloatingButton>
       <FloatingButton
-  onClick={handleShowAreaModal}
-  style={{ bottom: '30px', right: '370px' }}
->
-  <FontAwesomeIcon icon={faTh} />
-</FloatingButton>
+        onClick={handleShowAreaModal}
+        style={{ bottom: '3%', right: '12%' }}
+      >
+        <FontAwesomeIcon icon={faTh} />
+      </FloatingButton>
 
 
-      <Modal show={showUserModal} onHide={handleCloseUserModal}>
-        <Modal.Header style={{background:'#042B61'}} closeButton>
-          <Modal.Title style={{color:'#ffff'}}> Registar Usuario</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Usuario handleClose={handleCloseUserModal} />
-        </Modal.Body>
-      </Modal>
 
       {/* Aula/Laboratorio Modal */}
       <Modal show={showAulaLabModal} onHide={handleCloseAulaLabModal}>
-        <Modal.Header style={{background:'#042B61'}} closeButton>
-          <Modal.Title style={{color:'#ffff'}}>Registar Aula/Laboratorio </Modal.Title>
+        <Modal.Header style={{ background: '#042B61' }} closeButton>
+          <Modal.Title style={{ color: '#ffff' }}>Registar Aula/Laboratorio </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <A handleClose={handleCloseAulaLabModal} />
         </Modal.Body>
       </Modal>
       <Modal show={showAreaModal} onHide={handleCloseAreaModal}>
-  <Modal.Header style={{background:'#042B61'}} closeButton>
-    <Modal.Title style={{color:'#ffff'}}>Registrar Área</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <AreaForm handleClose={handleCloseAreaModal} />
-  </Modal.Body>
-</Modal>
-      <DndProvider backend={HTML5Backend}>
-        <div style={{ display: 'flex', justifyContent: 'space-around' ,textAlign: 'center'}}>
+        <Modal.Header style={{ background: '#042B61' }} closeButton>
+          <Modal.Title style={{ color: '#ffff' }}>Registrar Área</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <AreaForm handleClose={handleCloseAreaModal} />
+        </Modal.Body>
+      </Modal>
+
+      {loading?<Spinner/>:(
+        <DndProvider backend={HTML5Backend}>
+        <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
           <Column
             title="Pendientes"
             incidencias={pendientes}
@@ -234,10 +233,8 @@ const Ad = () => {
           />
         </div>
       </DndProvider>
-
-
-
-    </>
+      )}
+    </div>
   );
 };
 

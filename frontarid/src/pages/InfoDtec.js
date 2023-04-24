@@ -8,15 +8,21 @@ import { faCamera,faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import api from '../services/api';
 import UserContext from "../services/UserContext";
 import { ToastContainer, toast } from 'react-toastify';
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const InfoDtec = () => {
   const location = useLocation();
   const user = location.state.user;
-  console.log('Usertec:', user);
+  console.log("Usertec:", user);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showTablePassword, setShowTablePassword] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const { currentUser } = useContext(UserContext);
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
+  const toggleTablePasswordVisibility = () => {
+    setShowTablePassword(!showTablePassword);
+  };
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   const [formData, setFormData] = useState({
     username: user.username,
     apellidos: user.apellidos,
@@ -25,6 +31,30 @@ const InfoDtec = () => {
     roles: user.roles,
     telefono: user.telefono,
   });
+
+  // Añadido useEffect para escuchar cambios en formData
+  useEffect(() => {
+    console.log("formData:", formData);
+  }, [formData]);
+
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
+  const handleUpdateRequest = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await api.put(`/api/tecnicos/${user.id}/update-request`, formData);
+      if (response.status === 200) {
+        toast.success("Solicitud de actualización enviada");
+        handleCloseModal();
+      } else {
+        toast.error("Error al enviar la solicitud de actualización");
+      }
+    } catch (error) {
+      console.error("Error al enviar la solicitud de actualización:", error);
+      toast.error("Error al enviar la solicitud de actualización");
+    }
+  };
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -48,17 +78,16 @@ const InfoDtec = () => {
   useEffect(() => {
     async function fetchImage() {
       try {
-        const response = await api.get(`http://54.88.92.181:8080/api/tecnicos/${user.id}/imagen`, {
-          responseType: 'arraybuffer',
+        const response = await api.get(`/api/tecnicos/${user.id}/imagen`, {
+          responseType: "arraybuffer",
         });
         const base64 = btoa(
           new Uint8Array(response.data).reduce(
             (data, byte) => data + String.fromCharCode(byte),
-            ''
+            ""
           )
         );
         setImageUrl(`data:image/png;base64,${base64}?${new Date().getTime()}`);
-
       } catch (error) {
         console.error("Error al obtener la imagen:", error);
       }
@@ -71,58 +100,63 @@ const InfoDtec = () => {
 
   const uploadImage = async (userId, file) => {
     const formData = new FormData();
-    formData.append('imagen', file);
+    formData.append("imagen", file);
 
     try {
-      await api.post(`http://54.88.92.181:8080/api/tecnicos/${userId}/imagen`, formData, {
+    const response = await api.post(`/api/tecnicos/${userId}/imagen`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!formData.username) {
-      toast.info('El campo Nombre no puede estar vacío');
-      return;
-    }
-
-    if (parseInt(formData.telefono) < -2147483648 || parseInt(formData.telefono) > 2147483647) {
-      toast.info('El valor del campo Teléfono está fuera del rango permitido');
-      return;
-    }
-
-    try {
-      const response = await api.put(`http://54.88.92.181:8080/api/tecnicos/${user.id}`, formData);
-      console.log("info"+response.data)
-      if (response.status === 200) {
-        toast.success('Información actualizada');
-        handleCloseModal();
-        // Actualizamos los datos del usuario en el state del componente padre
-        const updatedUser = { ...user, ...formData };
-        location.state.user = updatedUser;
-      } else {
-        toast.error('Error al actualizar la información');
+          "Content-Type": "multipart/form-data",
+        }, });
+        console.log('Imagen cargada correctamente:', response.data);
+        return response.data;
+      } catch (error) {
+        console.error("Error al cargar la imagen:", error.response);
+        throw error;
       }
-    } catch (error) {
-      toast.error('Error al actualizar la información');
-    }
-  };
-
+    };
+    
+    const handleChange = (event) => {
+      setFormData({ ...formData, [event.target.name]: event.target.value });
+    };
+    
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+    
+      if (!formData.username) {
+        toast.info("El campo Nombre no puede estar vacío");
+        return;
+      }
+    
+      if (parseInt(formData.telefono) < -2147483648 || parseInt(formData.telefono) > 2147483647) {
+        toast.info("El valor del campo Teléfono está fuera del rango permitido");
+        return;
+      }
+    
+      try {
+        // Enviar solo la contraseña a la API
+        const response = await api.put(`/api/tecnicos/${user.id}`, formData);
+        console.log("info" + response.data);
+        if (response.status === 200) {
+          
+          // Actualiza solo la contraseña del usuario en el state del componente padre
+          user.password = formData.password;
+          toast.success("Contraseña actualizada y solicitud enviada");
+          handleCloseModal();
+        } else {
+          toast.error("Error al actualizar la contraseña");
+        }
+      } catch (error) {
+        console.error("Error al actualizar la información:", error);
+        toast.error("Error al actualizar la contraseña");
+        handleUpdateRequest(event);
+      }
+    };
+ 
   return (
     <>
-      <NavbarT user={currentUser} />
+      <NavbarT user={user} />
       <br></br>
-      <div className="container">
+      <div className="main-conta">
         <div className="row">
           <div className="col-12">
 
@@ -206,15 +240,7 @@ const InfoDtec = () => {
                           
                           
                           <hr />
-                          <div className="row">
-        <div className="col-sm-3">
-          <h6 className="mb-0">Contraseña</h6>
-        </div>
-        <div className="col-sm-9 text-secondary">
-          {user.password}
-        </div>
-      </div>
-      <hr />
+                          
                           <div className="row">
                             <div className="col-sm-3">
                               <h6 className="mb-0">Rol</h6>
@@ -233,6 +259,30 @@ const InfoDtec = () => {
                             </div>
 
                           </div>
+                          <hr />
+                          <div className="row">
+  <div className="col-sm-3">
+    <h6 className="mb-0">Contraseña</h6>
+  </div>
+  <div className="col-sm-9 text-secondary">
+    {showTablePassword ? user.password : "********"}
+    <button
+      type="button"
+      onClick={toggleTablePasswordVisibility}
+      style={{
+        backgroundColor: 'transparent',
+        border: "none",
+        marginLeft: "300px",
+      }}
+    >
+      {showTablePassword ? (
+        <FontAwesomeIcon style={{color:'black'}} icon={faEyeSlash} />
+      ) : (
+        <FontAwesomeIcon style={{color:'black'}} icon={faEye} />
+      )}
+    </button>
+    </div>
+    </div>
                           <hr />
                           <button type="submit" style={{margin:'15px',width: '50px',color:'#002E60', alignSelf: 'center',backgroundColor:'transparent',border:'none'}}onClick={handleShowModal}>
 <FontAwesomeIcon icon={faPencilAlt} size='2x'/>
@@ -269,23 +319,36 @@ const InfoDtec = () => {
               <label htmlFor="email">Email:</label><br></br>
               <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} />
             </div>
-            <div className="form-group">
-              <label htmlFor="password">Contraseña:</label>
-              <br></br>
-              <input
-                type="text"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-
+        
             <div className="form-group">
               <label htmlFor="telefono">telefono</label><br></br>
               <input type="number" id="telefono" name="telefono" value={formData.telefono} onChange={handleChange}  step="1" />
             </div>
-
+            <div className="form-group">
+  <label htmlFor="password">Contraseña:</label><br></br>
+  <input
+    type={showPassword ? "text" : "password"}
+    id="password"
+    name="password"
+    value={formData.password}
+    onChange={handleChange}
+  />
+  <button 
+    type="button"
+    onClick={togglePasswordVisibility}
+    style={{
+      backgroundColor: "transparent",
+      border: "none",
+      marginLeft: "400px",
+    }}
+  >
+    {showPassword ? (
+      <FontAwesomeIcon   style={{color:'black'}} icon={faEyeSlash} />
+    ) : (
+      <FontAwesomeIcon  style={{color:'black'}} icon={faEye} />
+    )}
+  </button>
+</div>
             <button type="submit" style={{ width: '100px', alignSelf: 'center' }}>guardar</button>
           </form>
         </Modal.Body>

@@ -6,6 +6,7 @@ import axios from 'axios';
 import SockJS from 'sockjs-client';
 import { Stomp } from "@stomp/stompjs";
 import { ToastContainer, toast } from 'react-toastify';
+import api from '../services/api';
 
 const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia }) => {
   const [messages, setMessages] = useState([]);
@@ -14,7 +15,7 @@ const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia })
   const [file, setFile] = useState(null);
   const [connected, setConnected] = useState(false);
   const stompClientRef = useRef(null);
-  const SERVER_BASE_URL = 'http://54.88.92.181:8080';
+  const SERVER_BASE_URL = 'http://44.197.13.101:8080';
   const { currentUser } = useContext(UserContext);
   const tecnicoId = currentUser.id;
 
@@ -35,8 +36,8 @@ const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia })
     }
   
     try {
-      const response = await axios.get(
-        `http://54.88.92.181:8080/api/tecnico/conversations/${tecnicoId}/${docenteId}/${incidenciaId}`
+      const response = await api.get(
+        `api/tecnico/conversations/${tecnicoId}/${docenteId}/${incidenciaId}`
       );
       
       setMessages(response.data);
@@ -52,7 +53,7 @@ const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia })
     formData.append("file", file);
 
     try {
-      const response = await axios.post("http://54.88.92.181:8080/upload-file", formData);
+      const response = await axios.post("http://44.197.13.101:8080/upload-file", formData);
       return response.data.fileUrl;
     } catch (error) {
       throw new Error("Error al cargar el archivo:", error);
@@ -61,7 +62,11 @@ const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia })
   const sendMessage = async (e) => {
     e.preventDefault();
     if (messageContent.trim() === '' && !file) return;
-
+  
+    if (!connected) {
+      toast.error("No se pudo enviar el mensaje, la conexión no está disponible.");
+      return;
+    }
     const newMessage = {
       docenteId: docenteId,
       tecnicoId: tecnicoId,
@@ -97,7 +102,7 @@ const ChatMD = ({ show, handleClose, docenteId, incidenciaId,estadoIncidencia })
   };
   useEffect(() => {
     const chatId = `chat_${docenteId}_${tecnicoId}`;
-    const socket = new SockJS('http://54.88.92.181:8080/ws');
+    const socket = new SockJS('http://44.197.13.101:8080/ws');
     const stompClient = Stomp.over(socket);
     stompClientRef.current = stompClient;
 

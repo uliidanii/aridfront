@@ -4,7 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import '../assets/css/style.css'
 import '../assets/css/select.css'
 
-const Usuario = ({ handleClose, handleSubmit }) => {
+const Usuario = ({ handleClose,onUserRegistered }) => {
   const [nombres, setNombres] = useState('');
   const [apellidos, setApellidos] = useState('');
   const [email, setEmail] = useState('');
@@ -12,7 +12,12 @@ const Usuario = ({ handleClose, handleSubmit }) => {
   const [telefono, setTelefono] = useState('');
   const [division, setDivision] = useState('');
   const [rol, setRol] = useState('');
-
+  const [opcionesDivision, setOpcionesDivision] = useState([
+    { id: 1, nombre: "DATID" },
+    { id: 2, nombre: "DATEFI" },
+    { id: 3, nombre: "DACEA" }
+  ]);
+  
   const validateForm = () => {
     const emailPattern = /^[\w-]+(\.[\w-]+)*@utez\.edu\.mx$/;
     const phonePattern = /^\d+$/;
@@ -44,7 +49,7 @@ const Usuario = ({ handleClose, handleSubmit }) => {
   
 
     try {
-      const response = await api.post('http://54.88.92.181:8080/registro', {
+      const response = await api.post('http://localhost:8080/registro', {
         nombres: nombres,
         apellidos: apellidos,
         email: email,
@@ -54,12 +59,18 @@ const Usuario = ({ handleClose, handleSubmit }) => {
         rol: rol,
       });
 
-      console.log(response.data);
-
-      toast.success("Registro Exitosa");
+      console.log('aqui va el resultado del registro => '+response.data);
+      if(response.data==="email ya registrado"){
+        toast.error("Email ya registrado");
+      }else if(response.data==="Registro exitoso"){
+        toast.success("Registro Exitosa");
+      }else if(response.data==="Error al registrarse"){
+        toast.error("Error al registrarse")
+      }
       handleClose();
+      onUserRegistered();
     } catch (error) {
-      toast.error("Error " +error);
+      toast.error("Se ha excedido el tiempo de espera, Recargue la pagina");
       console.error('Error al registrar:', error);
     }
   };
@@ -100,13 +111,17 @@ const Usuario = ({ handleClose, handleSubmit }) => {
       />
     </div>
     <div>
-      <label>División:</label><br></br>
-      <input
-        type="text"
-        value={division}
-        onChange={(e) => setDivision(e.target.value)}
-      />
-    </div>
+  <label>División:</label><br></br>
+  <select value={division} onChange={(e) => setDivision(e.target.value)}>
+    <option value="">Seleccione una división</option>
+    {opcionesDivision.map((opcion) => (
+      <option key={opcion.id} value={opcion.nombre}>
+        {opcion.nombre}
+      </option>
+    ))}
+  </select>
+</div>
+
     <div>
       <label>Rol:</label><br></br>
       <select value={rol} onChange={(e) => setRol(e.target.value)}>
@@ -115,7 +130,7 @@ const Usuario = ({ handleClose, handleSubmit }) => {
         <option value="tecnico">Técnico</option>
       </select>
     </div>
-    <button type="submit" style={{ width: '100px', alignSelf: 'center' }}>Registrar</button>
+    <button  type="submit" style={{ width: '100px', alignSelf: 'center',backgroundColor:'#0B0B61' }}>Registrar</button>
   </form>
   
   );

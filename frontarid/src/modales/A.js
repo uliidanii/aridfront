@@ -25,12 +25,31 @@ const AulaLaboratorioForm = ({ handleClose }) => {
   }, []);
 
   const validateForm = () => {
+    const nombrePattern = /^[a-zA-Z]+(\s+[a-zA-Z]+)*$/;
+    
     if (!nombre || !areaId) {
       toast.error("Debe seleccionar un área y proporcionar un nombre");
       return false;
+    } else if (/^[^a-zA-Z]+|[^\w\s]+/gi.test(nombre)) {
+      console.log(nombrePattern.test(nombre)); // Agrega un console.log para verificar el valor de la expresión regular
+      toast.error("El nombre no puede comenzar con números o caracteres especiales y solo debe contener letras y espacios");
+      return false;
     }
+    
     return true;
   };
+  
+  const validateNombre = () => {
+    const nombrePattern = /^[a-zA-Z]+(\s+[a-zA-Z]+)*$/;
+  
+    if (!nombre) {
+      toast.error("Debe proporcionar un nombre");
+    } else if (!nombrePattern.test(nombre)) {
+      toast.error("El nombre no puede comenzar con números o caracteres especiales y solo debe contener letras y espacios");
+    }
+  };
+  
+  
   
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,11 +101,12 @@ const AulaLaboratorioForm = ({ handleClose }) => {
         </select>
       </div>
       <div>
-        <label className='form' onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }} >Nombre:</label>
-        <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-      </div>
+  <label className='form' style={{ display: 'flex', flexDirection: 'column', gap: '10px' }} >Nombre:</label>
+  <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} onBlur={validateNombre} />
+</div>
+
       <br/>
-      <button type="submit" style={{ width: '100px', alignSelf: 'center' }}>Registrar</button>
+      <button type="submit" style={{ width: '100px', alignSelf: 'center',backgroundColor:'#0B0B61' }}>Registrar</button>
     </form>
   );
 };

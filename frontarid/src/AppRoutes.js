@@ -13,7 +13,7 @@ import InfoDoc from './pages/InfoDoc';
 import InfoDtec from './pages/InfoDtec';
 import { Informes } from './graficas/Informes';
 import { InformesTecnico } from './graficasTecnico/InformesTecnico';
-
+import AcceptIncident from './pages/AcceptIncident';
 const AppRoutes = () => {
   const userContext = React.useContext(UserContext);
   const { currentUser } = userContext;
@@ -130,7 +130,12 @@ const AppRoutes = () => {
     )
   }
 />
-
+<Route
+        path="/accept-incident"
+        element={
+          <AcceptIncident />
+        }
+      />
     </Routes>
   );
 };

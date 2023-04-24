@@ -9,7 +9,14 @@ const AreaForm = ({ handleClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const area = { nombre };
-  
+    if (!nombre) {
+      toast.error('Por favor, ingresa un nombre para el área');
+      return;
+    } else if (/^[^a-zA-Z]+|[^\w\s]+/gi.test(nombre)) {
+      toast.error('El nombre no puede comenzar con números o caracteres especiales');
+      return;
+    }
+    
     try {
       await AreaService.registrarArea(area);
       toast.success('Área registrada con éxito');
@@ -32,7 +39,7 @@ const AreaForm = ({ handleClose }) => {
           onChange={(e) => setNombre(e.target.value)}
         />
       </div>
-      <button type="submit">Registrar</button>
+      <button style={{backgroundColor:'#0B0B61'}} type="submit">Registrar</button>
     </form>
   );
 };

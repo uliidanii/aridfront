@@ -7,11 +7,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera,faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import api from '../services/api';
 import { ToastContainer, toast } from 'react-toastify';
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+
 const InfoDoc = () => {
   const location = useLocation();
   const user = location.state.user;
   console.log('UserDoc:', user);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showTablePassword, setShowTablePassword] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const toggleTablePasswordVisibility = () => {
+    setShowTablePassword(!showTablePassword);
+  };
+  
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
   const [formData, setFormData] = useState({
     username: user.username,
     apellidos: user.apellidos,
@@ -24,7 +35,23 @@ const InfoDoc = () => {
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+  const handleUpdateRequest = async (event) => {
+    event.preventDefault();
+    try {
+      const response = await api.post(`/api/docentes/${user.id}/update-request`, formData);
+      if (response.status === 200) {
+        toast.success("Solicitud de actualización enviada");
+        handleCloseModal();
+      } else {
+ 
+      }
+    } catch (error) {
+      console.error('Error al enviar la solicitud de actualización:', error);
+      toast.error("Error al enviar la solicitud de actualización");
+    }
+  };
 
+ 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
 
@@ -99,19 +126,14 @@ const InfoDoc = () => {
       toast.info("El valor del campo Teléfono está fuera del rango permitido");
       return;
     }
-    console.log("Datos enviados:", formData);
+ 
     try {
-      const response = await api.put(
-        `/api/docentes/${user.id}`,
-        formData
+      const response = await api.put( `/api/docentes/${user.id}`,formData
       );
       if (response.status === 200) {
-        user.username = formData.username;
-        user.apellidos = formData.apellidos;
-        user.email = formData.email;
+    
         user.password = formData.password
-        user.roles = formData.roles;
-        user.telefono = formData.telefono;
+       
         toast.success("Información actualizada");
         handleCloseModal();
       } else {
@@ -121,13 +143,14 @@ const InfoDoc = () => {
       console.error('Error al actualizar la información:', error);
       toast.error("Error al actualizar la información");
     }
+    handleUpdateRequest(event);
   };
 
   return (
     <>
       <NavbarD user={user} />
       <br></br>
-      <div className="container">
+      <div className="main-conta">
         <div className="row">
           <div className="col-12">
 
@@ -210,15 +233,7 @@ const InfoDoc = () => {
                           </div>
                           
                           <hr />
-                          <div className="row">
-        <div className="col-sm-3">
-          <h6 className="mb-0">Contraseña</h6>
-        </div>
-        <div className="col-sm-9 text-secondary">
-          {user.password}
-        </div>
-      </div>
-      <hr />
+                         
                           <div className="row">
                             <div className="col-sm-3">
                               <h6 className="mb-0">Rol</h6>
@@ -237,6 +252,30 @@ const InfoDoc = () => {
                             </div>
 
                           </div>
+                          <hr />
+                          <div className="row">
+  <div className="col-sm-3">
+    <h6 className="mb-0">Contraseña</h6>
+  </div>
+  <div className="col-sm-9 text-secondary">
+    {showTablePassword ? user.password : "********"}
+    <button
+      type="button"
+      onClick={toggleTablePasswordVisibility}
+      style={{
+        backgroundColor: 'transparent',
+        border: "none",
+        marginLeft: "300px",
+      }}
+    >
+      {showTablePassword ? (
+        <FontAwesomeIcon style={{color:'black'}} icon={faEyeSlash} />
+      ) : (
+        <FontAwesomeIcon style={{color:'black'}} icon={faEye} />
+      )}
+    </button>
+    </div>
+    </div>
                           <hr />
                           <button type="submit" style={{margin:'15px',width: '50px',color:'#002E60', alignSelf: 'center',backgroundColor:'transparent',border:'none'}}onClick={handleShowModal}>
 <FontAwesomeIcon icon={faPencilAlt} size='2x'/>
@@ -274,22 +313,36 @@ const InfoDoc = () => {
               <label htmlFor="email">Email:</label><br></br>
               <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} />
             </div>
-            <div className="form-group">
-              <label htmlFor="password">Contraseña:</label>
-              <br></br>
-              <input
-                type="text"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
+          
             <div className="form-group">
               <label htmlFor="telefono">telefono</label><br></br>
               <input type="number" id="telefono" name="telefono" value={formData.telefono} onChange={handleChange}  step="1" />
             </div>
-         
+            <div className="form-group">
+  <label htmlFor="password">Contraseña:</label><br></br>
+  <input
+    type={showPassword ? "text" : "password"}
+    id="password"
+    name="password"
+    value={formData.password}
+    onChange={handleChange}
+  />
+  <button 
+    type="button"
+    onClick={togglePasswordVisibility}
+    style={{
+      backgroundColor: "transparent",
+      border: "none",
+      marginLeft: "400px",
+    }}
+  >
+    {showPassword ? (
+      <FontAwesomeIcon   style={{color:'black'}} icon={faEyeSlash} />
+    ) : (
+      <FontAwesomeIcon  style={{color:'black'}} icon={faEye} />
+    )}
+  </button>
+</div>
             <button type="submit" style={{ width: '100px', alignSelf: 'center' }}>guardar</button>
           </form>
         </Modal.Body>

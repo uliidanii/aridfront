@@ -85,7 +85,7 @@ const Incidencia = ({ handleClose, onUpdateIncidencias }) => {
     console.log(formData);
   
     try {
-      const response = await axios.post('http://54.88.92.181:8080/incidencias/crear-incidencia', formData, {
+      const response = await axios.post('http://localhost:8080/incidencias/crear-incidencia', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -190,7 +190,7 @@ const Incidencia = ({ handleClose, onUpdateIncidencias }) => {
         />
       </div>
       <div>
-        <button type="submit" >Crear</button>
+        <button style={{backgroundColor:'#0B0B61'}} type="submit" >Crear</button>
       </div>
   </form>
   

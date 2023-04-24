@@ -11,8 +11,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import { useLocation } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import Spinner from '../components/Spinner';
+import img from '../assets/img/ut.png'
 
 const Tec = () => {
+  const [loading, setLoading] = useState(false)
   const [incidencias, setIncidencias] = useState([]);
   const { currentUser } = useContext(UserContext);
   const correoTecnico = currentUser.email;
@@ -23,20 +26,27 @@ const Tec = () => {
   const [selectedIncidenciaId, setselectedIncidenciaId] = useState(null);
   const [selectedIncidencia, setSelectedIncidencia] = useState(null);
   const [selectedIncidenciaStatus, setSelectedIncidenciaStatus] = useState(null);
-
+  const userRole = user.roles;
   const handleIncidenciaDrop = async (sourceIncidencia, targetEstado) => {
     if (sourceIncidencia.estado === 'COMPLETADA') {
       toast.error("No se puede cambiar el estado de una incidencia completada");
       return;
     }
-
+  
+  
+    if ((sourceIncidencia.estado === 'ACTIVA' && targetEstado === 'PENDIENTE') ||
+        (sourceIncidencia.estado === '' && targetEstado === '')) {
+      toast.error("No se permite esta transición de estado");
+      return;
+    }
+  
     const updatedIncidencia = { ...sourceIncidencia, estado: targetEstado };
-
+  
     const performAction = async () => {
       setIncidencias((prevIncidencias) =>
         prevIncidencias.filter((incidencia) => incidencia.id !== updatedIncidencia.id)
       );
-
+  
       if (sourceIncidencia.estado === 'PENDIENTE' && targetEstado === 'ACTIVA') {
         try {
           await assignTechnicianToIncidencia(sourceIncidencia.id, correoTecnico);
@@ -59,10 +69,10 @@ const Tec = () => {
           return;
         }
       }
-
+  
       setIncidencias((prevIncidencias) => [...prevIncidencias, updatedIncidencia]);
     };
-
+  
     if (sourceIncidencia.estado === 'PENDIENTE' && targetEstado === 'ACTIVA') {
       confirmAlert({
         title: 'Confirmar',
@@ -96,9 +106,11 @@ const Tec = () => {
     }
   };
   
+  
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
+        setLoading(true)
         const responsePendientes = await api.get('/incidencias', {
           params: { estado: 'PENDIENTE' },
         });
@@ -119,9 +131,10 @@ const Tec = () => {
           ...responseActivas.data,
           ...responseCompletadas.data,
         ]);
-      
+        setLoading(false)
       } catch (error) {
         console.error('Error al obtener las incidencias:', error);
+        setLoading(false)
       }
     };
   
@@ -153,42 +166,50 @@ const Tec = () => {
   const handleCloseChatMD  = () => setShowChatMD (false);
 
   return (
-    <>
+    <div style={{backgroundImage:`url(${img})`,width:"100%",height:'100vh',backgroundRepeat:'no-repeat',backgroundPosition:'center'}}>
       <NavbarT user={currentUser} />
 
-    <DndProvider backend={HTML5Backend}>
-      <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
-        <Column
-          title="Pendientes"
-          incidencias={pendientes}
-          onDrop={(incidencia) => handleIncidenciaDrop(incidencia, 'PENDIENTE')}
-          handleShowChatMD={handleShowChatMD}
-          userRole="tecnico"
-        />
-        <Column
-          title="Activas"
-          incidencias={activas}
-          onDrop={(incidencia) => handleIncidenciaDrop(incidencia, 'ACTIVA')}
-          handleShowChatMD={handleShowChatMD}
-          userRole="tecnico"
-        />
-        <Column
-          title="Completado"
-          incidencias={completadas}
-          onDrop={(incidencia) => handleIncidenciaDrop(incidencia, 'COMPLETADA')}
-          handleShowChatMD={handleShowChatMD}
-          userRole="tecnico"
-       />
-      </div>
-    </DndProvider>
+      {loading?<Spinner/>:(
+        <DndProvider backend={HTML5Backend}>
+        <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+          <Column
+            title="Pendientes"
+            incidencias={pendientes}
+            onDrop={(incidencia) => handleIncidenciaDrop(incidencia, 'PENDIENTE')}
+            handleShowChatMD={handleShowChatMD}
+            userRole="tecnico"
+            correoTecnico={correoTecnico} 
+          />
+          <Column
+            title="Activas"
+            incidencias={activas}
+            onDrop={(incidencia) => handleIncidenciaDrop(incidencia, 'ACTIVA')}
+            handleShowChatMD={handleShowChatMD}
+            userRole="tecnico"
+            correoTecnico={correoTecnico} 
+          />
+          <Column
+            title="Completado"
+            incidencias={completadas}
+            onDrop={(incidencia) => handleIncidenciaDrop(incidencia, 'COMPLETADA')}
+            handleShowChatMD={handleShowChatMD}
+            userRole="tecnico"
+            correoTecnico={correoTecnico} 
+         />
+        </div>
+      </DndProvider>
+      )}
+    
     <ChatMD
         show={showChatMD}
         handleClose={() => setShowChatMD(false)}
         docenteId={selectedDocenteId}
         incidenciaId={selectedIncidenciaId}
-        estadoIncidencia={selectedIncidenciaStatus} 
+        estadoIncidencia={selectedIncidenciaStatus}
+        userRole={userRole}
+        correoTecnico={correoTecnico}
       />
-    </>
+    </div>
   );
   
 };
