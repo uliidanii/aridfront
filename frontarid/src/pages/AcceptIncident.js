@@ -13,7 +13,7 @@ const AcceptIncident = () => {
                 window.location.href = "/"; // Redirige al inicio o a la página que desees
             }
         };
-        xhttp.open("PUT", "http://44.197.13.101:8080/incidencias/" + idIncidencia + "/aceptar-nuevo-tecnico?emailNuevoTecnico=" + encodeURIComponent(emailNuevoTecnico), true);
+        xhttp.open("PUT", "http://3.230.179.252:8080/incidencias/" + idIncidencia + "/aceptar-nuevo-tecnico?emailNuevoTecnico=" + encodeURIComponent(emailNuevoTecnico), true);
         xhttp.send();
     };
 

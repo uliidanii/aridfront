@@ -61,7 +61,7 @@ const Card = ({
 
   console.log("Estado de la incidencia seleccionada:", incidencia.estado);
 
-  const serverBaseUrl = "http://44.197.13.101:8080";
+  const serverBaseUrl = "http://3.230.179.252:8080";
   const area = incidencia && incidencia.area ? incidencia.area : {};
   const aula = incidencia && incidencia.aula ? incidencia.aula : {};
   const laboratorio = incidencia && incidencia.laboratorio ? incidencia.laboratorio : {};

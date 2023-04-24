@@ -85,7 +85,7 @@ export const InformeDocentes = ({ dateRange }) => {
       if (dateRange.startDate) queryParams.append('startDate', moment(dateRange.startDate).format('YYYY-MM-DD'));
       if (dateRange.endDate) queryParams.append('endDate', moment(dateRange.endDate).format('YYYY-MM-DD'));
   
-      const response = await axios.get('http://44.197.13.101:8080/incidencias/incidencias-por-docente', { params: queryParams });
+      const response = await axios.get('http://3.230.179.252:8080/incidencias/incidencias-por-docente', { params: queryParams });
       const data = Object.entries(response.data).map(([name, incidencias]) => ({ name, incidencias }));
       setDatosApi(data)
       setLoading(false);

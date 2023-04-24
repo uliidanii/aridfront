@@ -354,7 +354,7 @@ const Tables = () => {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const response = await axios.get(`http://44.197.13.101:8080/api/${userType}`);
+      const response = await axios.get(`http://3.230.179.252:8080/api/${userType}`);
       setUsers(response.data);
       setLoading(false)
     } catch (error) {
@@ -373,7 +373,7 @@ const Tables = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://44.197.13.101:8080/api/${userType}/${id}`);
+      await axios.delete(`http://3.230.179.252:8080/api/${userType}/${id}`);
       setUsers(users.filter((user) => user.id !== id));
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);

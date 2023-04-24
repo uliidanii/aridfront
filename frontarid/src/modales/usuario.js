@@ -49,7 +49,7 @@ const Usuario = ({ handleClose,onUserRegistered }) => {
   
 
     try {
-      const response = await api.post('http://localhost:8080/registro', {
+      const response = await api.post('http://3.230.179.252:8080/registro', {
         nombres: nombres,
         apellidos: apellidos,
         email: email,

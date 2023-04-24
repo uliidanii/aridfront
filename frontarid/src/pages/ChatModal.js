@@ -15,7 +15,7 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId, onNewMessage, e
   const [file, setFile] = useState(null);
   const [connected, setConnected] = useState(false);
   const stompClientRef = useRef(null);
-  const SERVER_BASE_URL = 'http://44.197.13.101:8080';
+  const SERVER_BASE_URL = 'http://3.230.179.252:8080';
   const { currentUser } = useContext(UserContext);
   const docenteId = currentUser.id;
   const [incidenciaStatus, setIncidenciaStatus] = useState('');
@@ -100,7 +100,7 @@ const ChatModal = ({ show, handleClose, tecnicoId, incidenciaId, onNewMessage, e
   };
   useEffect(() => {
     const chatId = `chat_${docenteId}_${tecnicoId}`;
-    const socket = new SockJS('http://44.197.13.101:8080/ws');
+    const socket = new SockJS('http://3.230.179.252:8080/ws');
     const stompClient = Stomp.over(socket);
     stompClientRef.current = stompClient;
 
